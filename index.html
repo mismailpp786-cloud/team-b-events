@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173f35">
+<title>Team B | Event Register</title>
+<style>
+:root{--g:#173f35;--mint:#e8f1ec;--line:#d7e0da;--ink:#18231e;--muted:#65736b}
+*{box-sizing:border-box}
+body{margin:0;background:#f5f7f5;color:var(--ink);font:15px system-ui,-apple-system,"Noto Sans Malayalam",sans-serif}
+header{background:var(--g);color:#fff;padding:20px 14px}
+.wrap{max-width:1150px;margin:auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.eyebrow{font-size:12px;letter-spacing:2px;color:#d9e7df;font-weight:700}
+.title{font-size:clamp(25px,5vw,36px);font-weight:800;margin:5px 0}
+.sub{color:#d9e7df}
+main{max-width:1150px;margin:17px auto;padding:0 11px 35px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:15px;padding:15px;margin-bottom:14px;box-shadow:0 4px 18px #173f3509}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:9px;padding:10px 13px;font-weight:700;cursor:pointer;background:var(--g);color:#fff}
+.btn.secondary{background:var(--mint);color:var(--g)}
+.btn.danger{background:#a52e2e}
+input,select{padding:10px;border:1px solid #cbd6ce;border-radius:9px;font:inherit;max-width:100%}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--g)}
+.notice{font-size:13px;color:var(--muted);line-height:1.55}
+.error{color:#a52e2e}
+.hidden{display:none!important}
+.stats{display:flex;gap:9px;flex-wrap:wrap;margin:13px 0}
+.stat{background:var(--mint);border-radius:11px;padding:9px 13px;min-width:100px}
+.stat b{display:block;font-size:21px;color:var(--g)}
+.stat span{font-size:12px;color:var(--muted)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:11px}
+table{border-collapse:separate;border-spacing:0;width:100%;background:#fff;min-width:600px}
+th,td{padding:9px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center}
+th{background:#edf3ef;color:var(--g);font-size:13px}
+td.name,th.name{text-align:left;min-width:150px;position:sticky;left:0;background:#fff;z-index:1}
+th.name{background:#edf3ef;z-index:2}
+tr:last-child td{border-bottom:0}
+td:last-child,th:last-child{border-right:0}
+.tick{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:#e2f2e7;color:#176b37;font-weight:900}
+.empty{color:#aeb8b1}
+.editor-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.editor-row input{flex:1;min-width:130px}
+.student-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.student-card{border:1px solid var(--line);border-radius:11px;padding:11px}
+.student-card h3{margin:0 0 8px}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.checkgrid label{display:flex;align-items:center;gap:6px;font-size:13px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:18px}
+@media print{header,#loginPanel,#adminPanel,.no-print,footer{display:none!important}body{background:white}main{margin:0;max-width:none}.panel{border:0;box-shadow:none;padding:0}.table-wrap{overflow:visible}table{min-width:0;font-size:9px}th,td{padding:4px}td.name,th.name{position:static}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <div class="eyebrow">TEAM B · EVENT REGISTER</div>
+        <div class="title">STAGE & OFFSTAGE</div>
+        <div class="sub">Senior · Junior · Sub Junior · General</div>
+      </div>
+      <button class="btn secondary" id="adminOpen">Admin Login</button>
+    </div>
+  </div>
+</header>
+<main>
+  <section class="panel">
+    <div class="top">
+      <div>
+        <h2 style="margin:0 0 5px">മത്സരങ്ങളുടെ ലിസ്റ്റ്</h2>
+        <div class="notice">വിഭാഗം മാറ്റി പേരുകളും ടിക്ക് മാർക്കുകളും കാണാം.</div>
+      </div>
+      <div class="actions no-print">
+        <input id="search" placeholder="പേര് തിരയുക…" aria-label="പേര് തിരയുക">
+        <button class="btn secondary" id="printBtn">Print / PDF</button>
+      </div>
+    </div>
+    <div class="actions" style="margin-top:13px">
+      <label for="listSelect"><b>ലിസ്റ്റ്:</b></label>
+      <select id="listSelect">
+        <option>Senior Stage</option>
+        <option>Senior Offstage</option>
+        <option>Junior Stage</option>
+        <option>Junior Offstage</option>
+        <option>Sub Junior Stage</option>
+        <option>Sub Junior Offstage</option>
+        <option>General</option>
+      </select>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="studentCount">0</b><span>വിദ്യാർത്ഥികൾ</span></div>
+      <div class="stat"><b id="eventCount">0</b><span>മത്സരങ്ങൾ</span></div>
+      <div class="stat"><b id="entryCount">0</b><span>ആകെ ടിക്കുകൾ</span></div>
+    </div>
+    <div id="status" class="notice">ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു…</div>
+    <div class="table-wrap" style="margin-top:12px">
+      <table id="publicTable"><thead></thead><tbody></tbody></table>
+    </div>
+    <p class="notice">കുറിപ്പ്: ഫോട്ടോകളിൽ നിന്ന് വായിക്കാൻ ബുദ്ധിമുട്ടുള്ള മത്സരങ്ങളുടെ തലക്കെട്ടുകൾ താൽക്കാലികമായി “മത്സരം 1, 2…” എന്ന് നൽകിയിരിക്കുന്നു. Admin-ന് ശരിയായ പേര് ചേർത്ത് തിരുത്താം. വ്യക്തത കുറവുള്ള ചില കൈയെഴുത്ത് ടിക്കുകൾ ഫോട്ടോ നോക്കി തിരിച്ചറിഞ്ഞതനുസരിച്ച് ചേർത്തതാണ്.</p>
+  </section>
+
+  <section id="loginPanel" class="panel hidden">
+    <div class="top">
+      <h2 style="margin:0">Admin Login</h2>
+      <button class="btn secondary" id="closeLogin">Close</button>
+    </div>
+    <p class="notice">അഡ്മിൻ ഇമെയിലും പാസ്‌വേഡും ഉപയോഗിച്ച് പ്രവേശിക്കുക.</p>
+    <form id="loginForm" class="actions">
+      <input id="email" type="email" placeholder="Admin email" required autocomplete="username">
+      <input id="password" type="password" placeholder="Password" required autocomplete="current-password">
+      <button class="btn" type="submit">Login</button>
+    </form>
+    <div id="loginMessage" class="notice"></div>
+  </section>
+
+  <section id="adminPanel" class="panel hidden">
+    <div class="top">
+      <div>
+        <h2 style="margin:0">Admin Dashboard</h2>
+        <div id="adminIdentity" class="notice"></div>
+      </div>
+      <button class="btn danger" id="logoutBtn">Logout</button>
+    </div>
+    <p class="notice">ലിസ്റ്റ് തിരഞ്ഞെടുക്കുക. പേരുകൾ, മത്സരങ്ങൾ, ടിക്ക് മാർക്കുകൾ എന്നിവ തിരുത്തി Save All Changes അമർത്തുക.</p>
+    <div class="actions">
+      <label for="adminList"><b>തിരുത്തേണ്ട ലിസ്റ്റ്:</b></label>
+      <select id="adminList">
+        <option>Senior Stage</option>
+        <option>Senior Offstage</option>
+        <option>Junior Stage</option>
+        <option>Junior Offstage</option>
+        <option>Sub Junior Stage</option>
+        <option>Sub Junior Offstage</option>
+        <option>General</option>
+      </select>
+    </div>
+    <h3>മത്സരങ്ങൾ</h3>
+    <div class="editor-row">
+      <input id="newEvent" placeholder="പുതിയ മത്സരത്തിന്റെ പേര്">
+      <button class="btn" id="addEvent">Add Event</button>
+    </div>
+    <div id="eventEditor"></div>
+    <h3 style="margin-top:22px">വിദ്യാർത്ഥികൾ</h3>
+    <div class="editor-row">
+      <input id="newStudent" placeholder="വിദ്യാർത്ഥിയുടെ പേര്">
+      <button class="btn" id="addStudent">Add Student</button>
+    </div>
+    <div id="studentEditor" class="student-list"></div>
+    <div class="actions" style="margin-top:18px">
+      <button class="btn" id="saveAll">Save All Changes</button>
+      <span id="saveMessage" class="notice"></span>
+    </div>
+  </section>
+  <footer>TEAM B · STAGE & OFFSTAGE</footer>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const ADMIN_UID = "OQQh0D3gH7dWyaJcYAuaPR7enF52";
+const firebaseConfig = {
+  apiKey: "AIzaSyBL8HWXRq7_PMNAkkQEKHWVokqnQ3UlwbM",
+  authDomain: "team-b-events.firebaseapp.com",
+  projectId: "team-b-events",
+  storageBucket: "team-b-events.firebasestorage.app",
+  messagingSenderId: "608974851570",
+  appId: "1:608974851570:web:1563c918d553a31f27ef6b",
+  measurementId: "G-KFPS4SB9ZW"
+};
+
+const ev = n => Array.from({length: n}, (_, i) => "മത്സരം " + (i + 1));
+const mk = nums => nums.map(n => "മത്സരം " + n);
+
+const initial = {
+  "Senior Stage": {
+    events: ev(10),
+    students: [
+      {name: "Shibili", marks: mk([2,3,4,5,8])},
+      {name: "Ismail", marks: mk([2,5,6,9,10])},
+      {name: "Abdul vahab", marks: mk([1,2,3,6,7])},
+      {name: "Sinan P.k", marks: mk([1,6,7,8,10])},
+      {name: "Adhil", marks: mk([1,3,7,8])},
+      {name: "Rahees", marks: mk([2,3,4,7,8,10])},
+      {name: "Amir", marks: mk([6,9])},
+      {name: "Afsal", marks: mk([4,5,6])}
+    ]
+  },
+  "Senior Offstage": {
+    events: ev(22),
+    students: [
+      {name: "Shibili", marks: mk([1,3,7,8,9,14,17,18,19,20,21,22])},
+      {name: "Ismail", marks: mk([2,3,4,6,8,10,11,12,13,14,15,16,22])},
+      {name: "Abdul vahab", marks: mk([2,3,4,5,6,7,8,12,13,14,17,18])},
+      {name: "Sinan P.k", marks: mk([4,5,6,7,12,15,16,17])},
+      {name: "Adhil", marks: mk([2,4,5,6,8,9,10,12,14,16,17])},
+      {name: "Rahees", marks: mk([2,4,5,6,7,8,12,13,14,17,18,20])},
+      {name: "Amir", marks: mk([1,4,5,7,8,10,11,13,15,17,18,19])},
+      {name: "Afsal", marks: mk([4,5,6,7,9,10,12,13,15,16,19,20,21,22])}
+    ]
+  },
+  "Junior Stage": {
+    events: ev(9),
+    students: [
+      {name: "Sinan edayoor", marks: mk([1,2,4,5,6,7,8,9])},
+      {name: "Sinan cherushola", marks: mk([1,2,3,4,5,6,7,8,9])},
+      {name: "Aslam", marks: mk([1,2,4,5,6,7,8,9])},
+      {name: "Hijaz", marks: mk([2,3,4,6,7])},
+      {name: "Jazeel", marks: mk([1,3,5,7])}
+    ]
+  },
+  "Junior Offstage": {
+    events: ev(15),
+    students: [
+      {name: "Sinan edayoor", marks: mk([1,2,3,5,6,7,8,9,10,11,12,13,14,15])},
+      {name: "Sinan cherushola", marks: mk([1,3,4,5,6,7,8,9,10,11,12,13,14,15])},
+      {name: "Aslam", marks: mk([4,5,6,8,9,10,12,13,14,15])},
+      {name: "Hijaz", marks: mk([1,2,4,5,6,7,9,10,12,13,14])},
+      {name: "Jazeel", marks: mk([2,3,4,5,6,7,10,12,13,15])}
+    ]
+  },
+  "Sub Junior Stage": {
+    events: ev(7),
+    students: [
+      {name: "Nijad", marks: mk([1,2,3,4,5,6,7])},
+      {name: "Farhan", marks: mk([1,2,3,4,5,6,7])},
+      {name: "Nusaif", marks: mk([1,2,3,4,5,6,7])}
+    ]
+  },
+  "Sub Junior Offstage": {
+    events: ev(13),
+    students: [
+      {name: "Nijad", marks: mk([1,2,3,4,5,6,7,8,9,10,11,12,13])},
+      {name: "Farhan", marks: mk([1,2,3,4,5,6,7,8,9,10,11,12,13])},
+      {name: "Nusaif", marks: mk([1,2,3,4,5,6,7,8,9,10,11,12,13])}
+    ]
+  },
+  "General": {
+    events: ev(10),
+    students: [
+      {name: "Shibili", marks: mk([1,2,3,4,5,7,8,9,10])},
+      {name: "Ismail", marks: mk([3,4,8,10])},
+      {name: "Abdul vahab", marks: mk([8,10])},
+      {name: "Sinan P.k", marks: mk([3,5,9])},
+      {name: "Adhil", marks: mk([4,6,7,8,10])},
+      {name: "Rahees", marks: mk([4,10])},
+      {name: "Amir", marks: mk([7,10])},
+      {name: "Afsal", marks: mk([5,10])},
+      {name: "Sinan edayoor", marks: mk([4,5,8,9])},
+      {name: "Sinan cherushola", marks: mk([7,9])},
+      {name: "Aslam", marks: []},
+      {name: "Hijaz", marks: []},
+      {name: "Jazeel", marks: mk([5])},
+      {name: "Nijad", marks: mk([8])},
+      {name: "Farhan", marks: mk([9])},
+      {name: "Nusaif", marks: []}
+    ]
+  }
+};
+
+let data = {lists: JSON.parse(JSON.stringify(initial))};
+let app, auth, db, currentUser = null;
+
+const $ = id => document.getElementById(id);
+const isAdmin = u => Boolean(u && u.uid === ADMIN_UID);
+const active = () => data.lists[$("listSelect").value] || {events: [], students: []};
+const adminActive = () => data.lists[$("adminList").value] || {events: [], students: []};
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function status(m, err = false) {
+  $("status").textContent = m;
+  $("status").className = "notice" + (err ? " error" : "");
+}
+
+function renderPublic() {
+  let d = active();
+  let q = $("search").value.trim().toLowerCase();
+  let ss = d.students.filter(s => s.name.toLowerCase().includes(q));
+  $("studentCount").textContent = d.students.length;
+  $("eventCount").textContent = d.events.length;
+  $("entryCount").textContent = d.students.reduce((n, s) => n + s.marks.length, 0);
+  $("publicTable").querySelector("thead").innerHTML = "<tr><th>No</th><th class='name'>Name</th>" + d.events.map(e => `<th>${esc(e)}</th>`).join("") + "</tr>";
+  $("publicTable").querySelector("tbody").innerHTML = ss.length
+    ? ss.map(s => `<tr><td>${d.students.indexOf(s)+1}</td><td class="name">${esc(s.name)}</td>${d.events.map(e => `<td>${s.marks.includes(e) ? '<span class="tick">✓</span>' : '<span class="empty">—</span>'}</td>`).join("")}</tr>`).join("")
+    : `<tr><td colspan="${d.events.length+2}">${d.students.length ? "പേരുകളൊന്നും കണ്ടെത്തിയില്ല." : "ഈ ലിസ്റ്റിൽ വിദ്യാർത്ഥികളില്ല."}</td></tr>`;
+}
+
+function renderEditors() {
+  let d = adminActive();
+  $("eventEditor").innerHTML = d.events.map((e, i) => `<div class="editor-row"><input data-event="${i}" value="${esc(e)}" aria-label="Event name"><button class="btn danger" data-remove-event="${i}">Remove</button></div>`).join("");
+  $("studentEditor").innerHTML = d.students.map((s, i) => `<div class="student-card"><div class="editor-row"><input data-name="${i}" value="${esc(s.name)}" aria-label="Student name"><button class="btn danger" data-remove-student="${i}">×</button></div><div class="checkgrid">${d.events.map(e => `<label><input type="checkbox" data-si="${i}" data-me="${esc(e)}" ${s.marks.includes(e) ? "checked" : ""}>${esc(e)}</label>`).join("")}</div></div>`).join("");
+}
+
+function collect() {
+  let d = adminActive();
+  let oldEvents = [...d.events];
+  let eventInputs = [...document.querySelectorAll("[data-event]")];
+  let renamed = new Map();
+  eventInputs.forEach((el, i) => {
+    const next = el.value.trim();
+    if (oldEvents[i] && next) renamed.set(oldEvents[i], next);
+  });
+  d.students.forEach(s => s.marks = s.marks.map(m => renamed.get(m) || m));
+  d.events = eventInputs.map(el => el.value.trim());
+  document.querySelectorAll("[data-name]").forEach(el => d.students[+el.dataset.name].name = el.value.trim());
+  document.querySelectorAll("[data-si]").forEach(el => {
+    let s = d.students[+el.dataset.si];
+    let old = el.dataset.me;
+    let e = renamed.get(old) || old;
+    s.marks = s.marks.filter(x => x !== e);
+    if (el.checked) s.marks.push(e);
+  });
+  d.events = d.events.filter(Boolean);
+  d.students = d.students.filter(s => s.name);
+  d.students.forEach(s => s.marks = s.marks.filter(e => d.events.includes(e)));
+}
+
+function render() {
+  renderPublic();
+  renderEditors();
+}
+
+render();
+
+async function load() {
+  try {
+    let ref = doc(db, "eventLists", "team-b-lists");
+    let snap = await getDoc(ref);
+    if (snap.exists()) {
+      data = snap.data();
+      if (!data.lists) data.lists = {};
+      Object.keys(initial).forEach(n => {
+        if (!data.lists[n]) data.lists[n] = {events: [], students: []};
+      });
+    } else if (isAdmin(currentUser)) {
+      await setDoc(ref, data);
+    }
+    render();
+    status("ലിസ്റ്റ് തയ്യാറാണ്.");
+  } catch (e) {
+    render();
+    status("ലിസ്റ്റ് ലോഡ് ചെയ്തില്ല. Firebase config/rules പരിശോധിക്കുക: " + e.message, true);
+  }
+}
+
+async function save() {
+  if (!isAdmin(currentUser)) {
+    $("saveMessage").textContent = "Admin പ്രവേശനം ആവശ്യമാണ്.";
+    return;
+  }
+  collect();
+  $("saveMessage").textContent = "Saving…";
+  try {
+    await setDoc(doc(db, "eventLists", "team-b-lists"), data);
+    $("saveMessage").textContent = "മാറ്റങ്ങൾ സേവ് ചെയ്തു ✓";
+    renderPublic();
+    renderEditors();
+  } catch (e) {
+    $("saveMessage").textContent = "Save failed: " + e.message;
+  }
+}
+
+app = initializeApp(firebaseConfig);
+auth = getAuth(app);
+db = getFirestore(app);
+
+onAuthStateChanged(auth, u => {
+  currentUser = u;
+  const ok = isAdmin(u);
+  $("adminOpen").textContent = ok ? "Admin Dashboard" : "Admin Login";
+  $("adminPanel").classList.toggle("hidden", !ok);
+  $("loginPanel").classList.add("hidden");
+  if (ok) $("adminIdentity").textContent = u.email;
+  load();
+});
+
+$("listSelect").onchange = renderPublic;
+$("adminList").onchange = renderEditors;
+$("search").oninput = renderPublic;
+$("printBtn").onclick = () => window.print();
+$("adminOpen").onclick = () => isAdmin(currentUser) ? $("adminPanel").scrollIntoView({behavior: "smooth"}) : $("loginPanel").classList.toggle("hidden");
+$("closeLogin").onclick = () => $("loginPanel").classList.add("hidden");
+$("logoutBtn").onclick = () => signOut(auth);
+
+$("loginForm").onsubmit = async e => {
+  e.preventDefault();
+  $("loginMessage").textContent = "Logging in…";
+  try {
+    const cred = await signInWithEmailAndPassword(auth, $("email").value, $("password").value);
+    if (!isAdmin(cred.user)) {
+      await signOut(auth);
+      $("loginMessage").textContent = "ഈ അക്കൗണ്ടിന് Admin അനുമതിയില്ല.";
+      return;
+    }
+    $("loginMessage").textContent = "Login success ✓";
+  } catch (err) {
+    $("loginMessage").textContent = "Login failed: " + err.message;
+  }
+};
+
+$("addEvent").onclick = () => {
+  collect();
+  let d = adminActive();
+  let e = $("newEvent").value.trim();
+  if (!e) return;
+  if (d.events.includes(e)) {
+    alert("ഈ മത്സരം ഇതിനകം ഉണ്ട്.");
+    return;
+  }
+  d.events.push(e);
+  $("newEvent").value = "";
+  renderEditors();
+};
+
+$("addStudent").onclick = () => {
+  collect();
+  let d = adminActive();
+  let n = $("newStudent").value.trim();
+  if (!n) return;
+  d.students.push({name: n, marks: []});
+  $("newStudent").value = "";
+  renderEditors();
+};
+
+$("eventEditor").onclick = e => {
+  let b = e.target.closest("[data-remove-event]");
+  if (!b) return;
+  collect();
+  let d = adminActive();
+  let name = d.events[+b.dataset.removeEvent];
+  d.events = d.events.filter(x => x !== name);
+  d.students.forEach(s => s.marks = s.marks.filter(x => x !== name));
+  render();
+};
+
+$("studentEditor").onclick = e => {
+  let b = e.target.closest("[data-remove-student]");
+  if (!b) return;
+  collect();
+  adminActive().students.splice(+b.dataset.removeStudent, 1);
+  renderEditors();
+};
+
+$("studentEditor").onchange = e => {
+  if (!e.target.matches("[data-si]")) return;
+  let d = adminActive();
+  let s = d.students[+e.target.dataset.si];
+  let evName = e.target.dataset.me;
+  s.marks = s.marks.filter(x => x !== evName);
+  if (e.target.checked) s.marks.push(evName);
+};
+
+$("saveAll").onclick = save;
+</script>
+</body>
+</html>
